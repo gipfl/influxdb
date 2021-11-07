@@ -15,7 +15,7 @@ abstract class InfluxDbConnectionFactory
      * @param $baseUrl string InfluxDB base URL
      * @param string|null $username
      * @param string|null $password
-     * @return Promise
+     * @return Promise <InfluxDbConnection>
      */
     public static function create(CurlAsync $curl, $baseUrl, $username = null, $password = null)
     {

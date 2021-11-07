@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use React\Promise\Promise;
 use function React\Promise\resolve;
 
-class InfluxDbConnectionV1
+class InfluxDbConnectionV1 implements InfluxDbConnection
 {
     const API_VERSION = 'v1';
 
