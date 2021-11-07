@@ -27,8 +27,7 @@ class DataPoint
         }
 
         if (! empty($tags)) {
-            $this->tags = (array) $tags;
-            ksort($this->tags);
+            $this->addTags($tags);
         }
 
         if (is_array($fields) || is_object($fields)) {
@@ -45,6 +44,7 @@ class DataPoint
     public function addTags($tags)
     {
         $this->tags = array_merge($this->tags, (array) $tags);
+        ksort($this->tags);
     }
 
     public function getTag($name, $default = null)
