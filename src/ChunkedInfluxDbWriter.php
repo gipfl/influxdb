@@ -94,7 +94,7 @@ class ChunkedInfluxDbWriter
 
     public function flush()
     {
-        $this->connection->writeDataPoints($this->dbName, $this->buffer)->done();
+        $this->connection->writeDataPoints($this->dbName, $this->buffer, $this->precision)->done();
         $this->buffer = [];
         $this->stopFlushTimer();
     }
