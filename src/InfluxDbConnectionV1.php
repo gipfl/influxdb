@@ -224,7 +224,7 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
             'User-Agent' => static::USER_AGENT,
         ];
         if ($this->username !== null) {
-            $headers[' Authorization'] = 'Basic '
+            $headers['Authorization'] = 'Basic '
                 . \base64_encode($this->username . ':' . $this->password);
         }
 
