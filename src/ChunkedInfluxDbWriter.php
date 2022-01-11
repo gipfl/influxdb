@@ -40,6 +40,8 @@ class ChunkedInfluxDbWriter
     /** @var ?TimerInterface */
     protected $flushTimer;
 
+    protected $flushing = false;
+
     public function __construct(InfluxDbConnection $connection, $dbName, LoopInterface $loop)
     {
         $this->connection = $connection;
@@ -94,9 +96,16 @@ class ChunkedInfluxDbWriter
 
     public function flush()
     {
-        $this->connection->writeDataPoints($this->dbName, $this->buffer, $this->precision)->done();
-        $this->buffer = [];
-        $this->stopFlushTimer();
+        if ($this->flushing) {
+            return;
+        }
+        $this->flushing = true;
+        $done = function () {
+            $this->flushing = false;
+            $this->buffer = [];
+            $this->stopFlushTimer();
+        };
+        $this->connection->writeDataPoints($this->dbName, $this->buffer, $this->precision)->then($done, $done)->done();
     }
 
     public function stop()
