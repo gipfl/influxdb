@@ -21,7 +21,7 @@ abstract class LineProtocol
         ksort($tags);
         $string = '';
         foreach ($tags as $key => $value) {
-            if (strlen($value) === 0) {
+            if ($value === null || strlen($value) === 0) {
                 continue;
             }
             $string .= ',' . static::renderTag($key, $value);
