@@ -214,8 +214,19 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
         return $this->curl->post(
             $this->url('write', $params),
             $this->getRequestHeaders(),
-            \implode($dataPoints)
+            \implode($dataPoints),
+            $this->getDefaultCurlOptions()
         );
+    }
+
+    protected function getDefaultCurlOptions()
+    {
+        return [
+            // Hint: avoid 100/Continue
+            CURLOPT_HTTPHEADER => [
+                'Expect:',
+            ]
+        ];
     }
 
     protected function getRequestHeaders()
