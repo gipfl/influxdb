@@ -2,14 +2,21 @@
 
 namespace gipfl\InfluxDb;
 
+use gipfl\Curl\RequestError;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\TimerInterface;
 
 /**
  * Gives no result, enqueue and forget
  */
-class ChunkedInfluxDbWriter
+class ChunkedInfluxDbWriter implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     const DEFAULT_BUFFER_SIZE = 5000;
 
     const DEFAULT_FLUSH_INTERVAL = 0.2;
@@ -42,6 +49,7 @@ class ChunkedInfluxDbWriter
 
     public function __construct(InfluxDbConnection $connection, $dbName, LoopInterface $loop)
     {
+        $this->setLogger(new NullLogger());
         $this->connection = $connection;
         $this->dbName = $dbName;
         $this->loop = $loop;
@@ -97,7 +105,25 @@ class ChunkedInfluxDbWriter
         $buffer = $this->buffer;
         $this->buffer = [];
         $this->stopFlushTimer();
-        $this->connection->writeDataPoints($this->dbName, $buffer, $this->precision)->done();
+        $this->logger->debug(sprintf('Flushing InfluxDB buffer, sending %d data points', count($buffer)));
+        $start = microtime(true);
+        $this->connection->writeDataPoints($this->dbName, $buffer, $this->precision)
+            ->then(function (ResponseInterface $response) use ($start) {
+                $code = $response->getStatusCode();
+                $duration = (microtime(true) - $start) * 1000;
+                if ($code > 199 && $code < 300) {
+                    $this->logger->debug(sprintf('Got response from InfluxDB after %.2Fms', $duration));
+                } else {
+                    $this->logger->error(sprintf(
+                        'Got unexpected %d from InfluxDB after %.2Fms: %s',
+                        $code,
+                        $duration,
+                        $response->getReasonPhrase()
+                    ));
+                }
+            }, function (RequestError $e) {
+                $this->logger->error($e->getMessage());
+            })->done();
     }
 
     public function stop()
