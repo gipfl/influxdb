@@ -12,7 +12,7 @@ class InfluxDbConnectionV2 implements InfluxDbConnection
 {
     const API_VERSION = 'v2';
 
-    const USER_AGENT = 'gipfl-InfluxDB/0.1';
+    const USER_AGENT = 'gipfl-InfluxDB/0.4';
 
     /** @var CurlAsync */
     protected $curl;
