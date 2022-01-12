@@ -53,7 +53,6 @@ class ChunkedInfluxDbWriter implements LoggerAwareInterface
         $this->connection = $connection;
         $this->dbName = $dbName;
         $this->loop = $loop;
-        $this->startFlushTimer();
     }
 
     /**
