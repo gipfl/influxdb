@@ -21,7 +21,7 @@ abstract class InfluxDbConnectionFactory
     {
         $v1 = new InfluxDbConnectionV1($curl, $baseUrl);
         return $v1->getVersion()->then(function ($version) use ($baseUrl, $username, $password, $curl, $v1) {
-            if ($version === null) {
+            if ($version === null || preg_match('/^v?2\./', $version)) {
                 $v2 = new InfluxDbConnectionV2($curl, $baseUrl, $username, $password);
                 return $v2->getVersion()->then(function ($version) use ($v2) {
                     if ($version === null) {
