@@ -144,14 +144,14 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
             $body = \http_build_query(['q' => implode(';', $sendQueries)]);
             $urlParams = [];
             $promise = $this->curl->post(
-                $this->url("${prefix}query", $urlParams),
+                $this->url("{$prefix}query", $urlParams),
                 $this->getRequestHeaders() + $headers,
                 $body
             );
         } else {
             $urlParams = ['q' => implode(';', $sendQueries)];
             $promise = $this->curl->get(
-                $this->url("${prefix}query", $urlParams),
+                $this->url("{$prefix}query", $urlParams),
                 $this->getRequestHeaders()
             );
         }

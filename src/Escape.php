@@ -47,7 +47,7 @@ abstract class Escape
     {
         // Faster checks first
         if (is_int($value) || ctype_digit($value) || preg_match('/^-\d+$/', $value)) {
-            return "${value}i";
+            return "{$value}i";
         } elseif (is_bool($value)) {
             return $value ? self::TRUE : self::FALSE;
         } elseif (is_null($value)) {
