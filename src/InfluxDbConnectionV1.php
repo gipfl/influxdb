@@ -13,7 +13,7 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
 {
     const API_VERSION = 'v1';
 
-    const USER_AGENT = 'gipfl-InfluxDB/0.4';
+    const USER_AGENT = 'gipfl-InfluxDB/0.5';
 
     /** @var string */
     protected $baseUrl;
