@@ -5,6 +5,7 @@ namespace gipfl\InfluxDb;
 use gipfl\Curl\CurlAsync;
 use gipfl\Json\JsonString;
 use Psr\Http\Message\ResponseInterface;
+use Ramsey\Uuid\Uuid;
 use React\Promise\Promise;
 use function React\Promise\resolve;
 
@@ -211,6 +212,7 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
             $params['precision'] = $precision;
         }
         $headers = [
+            'X-Request-Id'     => Uuid::uuid4()->toString(),
             'Content-Encoding' => 'gzip',
             'Content-Length'   => strlen($body),
         ];
