@@ -205,16 +205,21 @@ class InfluxDbConnectionV1 implements InfluxDbConnection
      */
     public function writeDataPoints($dbName, array $dataPoints, $precision = null)
     {
+        $body = gzencode(\implode($dataPoints), 6);
         $params = ['db' => $dbName];
         if ($precision !== null) {
             $params['precision'] = $precision;
         }
+        $headers = [
+            'Content-Encoding' => 'gzip',
+            'Content-Length'   => strlen($body),
+        ];
         // params['rp'] = $retentionPolicy
         /** @var Promise $promise */
         return $this->curl->post(
             $this->url('write', $params),
-            $this->getRequestHeaders(),
-            \implode($dataPoints),
+            $this->getRequestHeaders() + $headers,
+            $body,
             $this->getDefaultCurlOptions()
         );
     }
