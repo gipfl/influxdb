@@ -148,8 +148,13 @@ class InfluxDbConnectionV2 implements InfluxDbConnection
      */
     public function writeDataPoints($dbName, array $dataPoints, $precision = null)
     {
-        $params = ['db' => $dbName];
         $body = gzencode(\implode($dataPoints), 6);
+        $params = [
+            'org'    => $this->org,
+            'bucket' => $dbName,
+            // TODO: Figure out, whether 2.0.0 also supports bucket. If so, drop db
+            'db'     => $dbName,
+        ];
         $headers = [
             'Content-Encoding' => 'gzip',
             'Content-Length'   => strlen($body),
@@ -159,7 +164,7 @@ class InfluxDbConnectionV2 implements InfluxDbConnection
         }
         // params['rp'] = $retentionPolicy
         return $this->curl->post(
-            $this->url('write', $params),
+            $this->url('api/v2/write', $params),
             $this->defaultHeaders() + $headers,
             $body,
             $this->getDefaultCurlOptions()
